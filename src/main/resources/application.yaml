@@ -1,0 +1,96 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: jwt-backend-service
+
+  # Database Configuration
+  datasource:
+    url: jdbc:mysql://localhost:3306/jwt_security_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # JPA Configuration
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+
+  # Email Configuration
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL_USERNAME:your-mail@xyz.com}
+    password: ${EMAIL_PASSWORD:your-mail-password }
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connection_timeout: 10000
+          timeout: 10000
+          write_timeout: 10000
+
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+  access-token-expiration: 900000      # 15 minutes
+  refresh-token-expiration: 86400000   # 24 hours
+  issuer: jwt-backend-service
+
+# Application Configuration
+app:
+  name: JWT Backend Service
+  version: 1.0.0
+  base-url: ${BASE_URL:http://localhost:8080}
+
+  # Security Configuration
+  security:
+    max-login-attempts: 5
+    account-lockout-duration: 1800000  # 30 minutes
+    password-reset-token-expiration: 3600000  # 1 hour
+    email-verification-token-expiration: 86400000  # 24 hours
+
+  # Rate Limiting
+  rate-limit:
+    enabled: true
+    requests-per-minute: 60
+    burst-capacity: 100
+
+# Logging Configuration
+logging:
+  level:
+    com.bikas.auth: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web: INFO
+  file:
+    name: logs/jwt-backend-service.log
+    max-size: 10MB
+    max-history: 30
+
+# Management and Monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# SpringDoc OpenAPI Configuration
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
